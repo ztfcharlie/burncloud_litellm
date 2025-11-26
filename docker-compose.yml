@@ -8,11 +8,11 @@ services:
     #########################################
     ## Start proxy with a config.yaml file ##
     volumes:
-      - ./config.yaml:/tmp/config.yaml:ro
+      - ./config.yaml:/litellm-config.yaml:ro
     command:
-      - "--config=/tmp/config.yaml"
+      - "--config=/litellm-config.yaml"
     ##############################################
-    container_name: litellm
+    container_name: litellm-proxy
     ports:
       - "4000:4000" # Map the container port to the host, change the host port if necessary
     environment:
