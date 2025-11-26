@@ -10,11 +10,11 @@ services:
       - "4000:4000"
     volumes:
       - ./config.yaml:/app/config.yaml:ro
-    command: ["--config=/app/config.yaml"]
+    command: ["--config=/app/config.yaml", "--port", "4000"]
     environment:
-      DATABASE_URL: "postgresql://${DB_USER}:${DB_PASSWORD}@litellm-db:5432/${DB_NAME}"
-      STORE_MODEL_IN_DB: "${STORE_MODEL_IN_DB}"
-      PROMETHEUS_ENABLED: "${PROMETHEUS_ENABLED}"
+      DATABASE_URL: "postgresql://llmproxy:litellm_password_123@litellm-db:5432/litellm"
+      STORE_MODEL_IN_DB: "true"
+      PROMETHEUS_ENABLED: "true"
     depends_on:
       - litellm-db
     healthcheck:
