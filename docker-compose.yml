@@ -8,9 +8,9 @@ services:
     #########################################
     ## Start proxy with a config.yaml file ##
     volumes:
-      - ./config.yaml:/app/config.yaml:ro
+      - ./config.yaml:/tmp/config.yaml:ro
     command:
-      - "--config=/app/config.yaml"
+      - "--config=/tmp/config.yaml"
     ##############################################
     container_name: litellm
     ports:
