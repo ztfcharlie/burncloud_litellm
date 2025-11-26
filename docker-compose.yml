@@ -3,14 +3,14 @@ services:
     image: ghcr.io/berriai/litellm:main-stable
     #########################################
     ## Start proxy with a config.yaml file ##
-    volumes:
-     - ./config.yaml:/app/config.yaml
-    command:
-     - "--config=/app/config.yaml"
+    # volumes:
+    #  - ./config.yaml:/app/config.yaml:ro
+    # command:
+    #  - "--config=/app/config.yaml"
     ##############################################
     container_name: litellm
     ports:
-      - "${LITELLM_PORT:-4000}:4000" # Map the container port to the host, change the host port if necessary
+      - "4000:4000" # Map the container port to the host, change the host port if necessary
     environment:
       DATABASE_URL: "postgresql://${DB_USER}:${DB_PASSWORD}@litellm-db:5432/${DB_NAME}"
       STORE_MODEL_IN_DB: "${STORE_MODEL_IN_DB:-True}" # allows adding models to proxy via UI
