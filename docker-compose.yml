@@ -15,9 +15,9 @@ services:
     ports:
       - "4000:4000" # Map the container port to the host, change the host port if necessary
     environment:
-      DATABASE_URL: "postgresql://${DB_USER}:${DB_PASSWORD}@litellm-db:5432/${DB_NAME}"
-      STORE_MODEL_IN_DB: "${STORE_MODEL_IN_DB}" # 从.env文件读取
-      PROMETHEUS_ENABLED: "${PROMETHEUS_ENABLED}" # 从.env文件读取
+      DATABASE_URL: "postgresql://llmproxy:litellm_password_123@litellm-db:5432/litellm"
+      STORE_MODEL_IN_DB: "true" # 数据库模型存储
+      PROMETHEUS_ENABLED: "true" # 启用Prometheus
     env_file:
       - .env # Load local .env file
     depends_on:
