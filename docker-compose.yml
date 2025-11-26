@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.4'
 
 services:
   # LiteLLM Proxy Service
@@ -7,12 +7,12 @@ services:
     container_name: litellm
     env_file: .env
     ports:
-      - "${LITELLM_PORT:-4000}:4000"
+      - "4000:4000"
     volumes:
       - ./config.yaml:/app/config.yaml:ro
-    command: ["--config=/app/config.yaml", "--port", "4000"]
+    command: ["--config=/app/config.yaml"]
     environment:
-      DATABASE_URL: "postgresql://llmproxy:litellm_password_123@litellm-db:5432/litellm"
+      DATABASE_URL: "postgresql://${DB_USER}:${DB_PASSWORD}@litellm-db:5432/${DB_NAME}"
       STORE_MODEL_IN_DB: "${STORE_MODEL_IN_DB}"
       PROMETHEUS_ENABLED: "${PROMETHEUS_ENABLED}"
     depends_on:
