@@ -16,7 +16,7 @@ services:
       - "4000:4000" # Map the container port to the host, change the host port if necessary
     environment:
       DATABASE_URL: "postgresql://${DB_USER}:${DB_PASSWORD}@litellm-db:5432/${DB_NAME}"
-      STORE_MODEL_IN_DB: "${STORE_MODEL_IN_DB:-True}" # allows adding models to proxy via UI
+      STORE_MODEL_IN_DB: "${STORE_MODEL_IN_DB}" # allows adding models to proxy via UI
     env_file:
       - .env # Load local .env file
     depends_on:
