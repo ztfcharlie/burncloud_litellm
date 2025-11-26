@@ -1,7 +1,17 @@
+# Prometheus configuration for LiteLLM
 global:
   scrape_interval: 15s
+  evaluation_interval: 15s
 
 scrape_configs:
+  # LiteLLM Proxy Metrics
   - job_name: 'litellm'
     static_configs:
-      - targets: ['litellm:4000']  # Assuming Litellm exposes metrics at port 4000
+      - targets: ['litellm:4000']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+
+  # Prometheus Self-Monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
