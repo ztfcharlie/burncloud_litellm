@@ -5,16 +5,17 @@ services:
   litellm:
     image: ghcr.io/berriai/litellm:main-stable
     container_name: litellm
-    env_file: .env
     ports:
       - "4000:4000"
     volumes:
       - ./config.yaml:/app/config.yaml:ro
     command: ["--config=/app/config.yaml", "--port", "4000"]
     environment:
-      DATABASE_URL: "postgresql://llmproxy:litellm_password_123@litellm-db:5432/litellm"
-      STORE_MODEL_IN_DB: "true"
-      PROMETHEUS_ENABLED: "true"
+      DATABASE_URL: "postgresql://llmproxy:litellm_password_123@db:5432/litellm"
+      STORE_MODEL_IN_DB: "True" # allows adding models to proxy via UI
+      PROMETHEUS_ENABLED: "True"
+    env_file: 
+      - .env
     depends_on:
       - litellm-db
     healthcheck:
@@ -31,7 +32,8 @@ services:
     image: postgres:16
     container_name: litellm-db
     restart: always
-    env_file: .env
+    env_file: 
+      - .env
     environment:
       POSTGRES_DB: ${DB_NAME:-litellm}
       POSTGRES_USER: ${DB_USER:-llmproxy}
@@ -52,7 +54,8 @@ services:
   litellm-prometheus:
     image: prom/prometheus
     container_name: litellm-prometheus
-    env_file: .env
+    env_file: 
+      - .env
     volumes:
       - ./prometheus_data:/prometheus
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
