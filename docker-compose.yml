@@ -1,50 +1,45 @@
+version: '3.8'
+
 services:
+  # LiteLLM Proxy Service
   litellm:
-    #build:
-    #  context: .
-    #  args:
-    #    target: runtime
     image: ghcr.io/berriai/litellm:main-stable
-    #########################################
-    ## Start proxy with a config.yaml file ##
-    volumes:
-      - ./config.yaml:/app/config.yaml
-    command: ["--config=/app/config.yaml"]
-    ##############################################
     container_name: litellm
+    env_file: .env
     ports:
-      - "4000:4000" # Map the container port to the host, change the host port if necessary
+      - "${LITELLM_PORT:-4000}:4000"
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+    command: ["--config=/app/config.yaml", "--port", "4000"]
     environment:
-      DATABASE_URL: "postgresql://llmproxy:litellm_password_123@litellm-db:5432/litellm"
-      STORE_MODEL_IN_DB: "true" # 数据库模型存储
-      PROMETHEUS_ENABLED: "true" # 启用Prometheus
-      DB_USER: "llmproxy" # 显式传递数据库用户
-      DB_PASSWORD: "litellm_password_123" # 显式传递数据库密码
-      DB_NAME: "litellm" # 显式传递数据库名
+      DATABASE_URL: "postgresql://${DB_USER}:${DB_PASSWORD}@litellm-db:5432/${DB_NAME}"
+      STORE_MODEL_IN_DB: "${STORE_MODEL_IN_DB}"
+      PROMETHEUS_ENABLED: "${PROMETHEUS_ENABLED}"
     depends_on:
-      - litellm-db  # Indicates that this service depends on the 'db' service, ensuring 'db' starts first
-    healthcheck:  # Defines the health check configuration for the container
-      test: [ "CMD-SHELL", "curl -f http://localhost:4000/health/liveliness || exit 1" ]  # Command to execute for health check
-      interval: 30s  # Perform health check every 30 seconds
-      timeout: 10s   # Health check command times out after 10 seconds
-      retries: 3     # Retry up to 3 times if health check fails
-      start_period: 40s  # Wait 40 seconds after container start before beginning health checks
+      - litellm-db
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:4000/health/liveliness || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     networks:
       - litellm-network
 
+  # PostgreSQL Database Service
   litellm-db:
     image: postgres:16
-    restart: always
     container_name: litellm-db
+    restart: always
+    env_file: .env
     environment:
       POSTGRES_DB: ${DB_NAME:-litellm}
       POSTGRES_USER: ${DB_USER:-llmproxy}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "${DB_HOST:-127.0.0.1}:${DB_PORT:-5432}:5432"
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data # Persists Postgres data across container restarts
+      - ./postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d ${DB_NAME:-litellm} -U ${DB_USER:-llmproxy}"]
       interval: 1s
@@ -53,9 +48,11 @@ services:
     networks:
       - litellm-network
 
+  # Prometheus Service
   litellm-prometheus:
     image: prom/prometheus
     container_name: litellm-prometheus
+    env_file: .env
     volumes:
       - ./prometheus_data:/prometheus
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
@@ -69,7 +66,8 @@ services:
     networks:
       - litellm-network
 
+# Docker Network
 networks:
-    litellm-network:
-      driver: bridge
-      name: litellm-network
+  litellm-network:
+    driver: bridge
+    name: litellm-network
