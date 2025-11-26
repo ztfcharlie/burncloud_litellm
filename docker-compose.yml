@@ -8,7 +8,7 @@ services:
     #########################################
     ## Start proxy with a config.yaml file ##
     volumes:
-      - ./config.yaml:/app/config.yaml:ro
+      - ./config.yaml:/app/config.yaml
     #command:
     #  - "--config=/app/config.yaml"
     ##############################################
