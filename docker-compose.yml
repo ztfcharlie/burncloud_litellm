@@ -21,8 +21,6 @@ services:
       DB_USER: "llmproxy" # 显式传递数据库用户
       DB_PASSWORD: "litellm_password_123" # 显式传递数据库密码
       DB_NAME: "litellm" # 显式传递数据库名
-    env_file:
-      - .env # Load local .env file
     depends_on:
       - litellm-db  # Indicates that this service depends on the 'db' service, ensuring 'db' starts first
     healthcheck:  # Defines the health check configuration for the container
@@ -41,6 +39,7 @@ services:
     environment:
       POSTGRES_DB: ${DB_NAME:-litellm}
       POSTGRES_USER: ${DB_USER:-llmproxy}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "${DB_HOST:-127.0.0.1}:${DB_PORT:-5432}:5432"
