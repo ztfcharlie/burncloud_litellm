@@ -18,6 +18,9 @@ services:
       DATABASE_URL: "postgresql://llmproxy:litellm_password_123@litellm-db:5432/litellm"
       STORE_MODEL_IN_DB: "true" # 数据库模型存储
       PROMETHEUS_ENABLED: "true" # 启用Prometheus
+      DB_USER: "llmproxy" # 显式传递数据库用户
+      DB_PASSWORD: "litellm_password_123" # 显式传递数据库密码
+      DB_NAME: "litellm" # 显式传递数据库名
     env_file:
       - .env # Load local .env file
     depends_on:
